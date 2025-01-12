@@ -4,6 +4,7 @@ package com.dev.ebankbackend.web;
 import com.dev.ebankbackend.dtos.*;
 import com.dev.ebankbackend.exceptions.BalanceNotSufficientException;
 import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
+import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 import com.dev.ebankbackend.services.BankAccountService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +63,16 @@ public class BankAccountRestAPI {
                 transferRequestDTO.getAccountSource(),
                 transferRequestDTO.getAccountDestination(),
                 transferRequestDTO.getAmount());
+    }
+    @PostMapping("/accounts/current")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public CurrentBankAccountDTO createCurrentAccount(@RequestBody CurrentBankAccountDTO request) throws CustomerNotFoundException {
+        return bankAccountService.saveCurrentBankAccount(request.getBalance(), request.getOverDraft(), request.getCustomerDTO().getId());
+    }
+
+    @PostMapping("/accounts/saving")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public SavingBankAccountDTO createSavingAccount(@RequestBody SavingBankAccountDTO request) throws CustomerNotFoundException {
+        return bankAccountService.saveSavingBankAccount(request.getBalance(), request.getInterestRate(), request.getCustomerDTO().getId());
     }
 }
