@@ -155,15 +155,27 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
-        log.info("Saving new Customer");
-        Customer customer = dtoMapper.fromCustomerDTO(customerDTO);
-        // Encoder le mot de passe si présent
-        if (customer.getPassword() != null) {
-            String encodedPassword = passwordEncoder.encode(customer.getPassword());
+        Customer customer = customerRepository.findById(customerDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Mettre à jour les champs uniquement s'ils sont fournis
+        if (customerDTO.getName() != null) {
+            customer.setName(customerDTO.getName());
+        }
+        if (customerDTO.getEmail() != null) {
+            customer.setEmail(customerDTO.getEmail());
+        }
+        if (customerDTO.getRole() != null) {
+            customer.setRole(customerDTO.getRole()); // Mettre à jour le rôle
+        }
+        // Ne pas écraser le mot de passe s'il n'est pas fourni
+        if (customerDTO.getPassword() != null && !customerDTO.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(customerDTO.getPassword());
             customer.setPassword(encodedPassword);
         }
-        Customer savedCustomer = customerRepository.save(customer);
-        return dtoMapper.fromCustomer(savedCustomer);
+
+        Customer updatedCustomer = customerRepository.save(customer);
+        return dtoMapper.fromCustomer(updatedCustomer);
     }
 
     @Override
