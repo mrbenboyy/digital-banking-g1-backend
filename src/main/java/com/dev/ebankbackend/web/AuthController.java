@@ -1,6 +1,8 @@
 package com.dev.ebankbackend.web;
 
+import com.dev.ebankbackend.dtos.ChangePasswordRequest;
 import com.dev.ebankbackend.dtos.CustomerDTO;
+import com.dev.ebankbackend.services.BankAccountServiceImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +26,11 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final String SECRET_KEY = "rGJ5Y3R4Z2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2Y2F1dmR2"; // Clé secrète pour signer le JWT
+    private final BankAccountServiceImpl bankAccountServiceImpl;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, BankAccountServiceImpl bankAccountServiceImpl) {
         this.authenticationManager = authenticationManager;
+        this.bankAccountServiceImpl = bankAccountServiceImpl;
     }
 
     @PostMapping("/login")
@@ -60,6 +64,15 @@ public class AuthController {
         } catch (Exception e) {
             System.out.println("Error during authentication: " + e.getMessage()); // Log d'autres erreurs
             return ResponseEntity.status(500).body(Map.of("error", "Internal server error"));
+        }
+    }
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            bankAccountServiceImpl.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }

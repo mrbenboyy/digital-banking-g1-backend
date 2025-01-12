@@ -31,4 +31,6 @@ public interface BankAccountService {
     AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
 
     List<CustomerDTO> searchCustomers(String keyword);
+
+    void changePassword(String email, String oldPassword, String newPassword);
 }

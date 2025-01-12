@@ -204,4 +204,17 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .map(dtoMapper::fromCustomer)
                 .collect(Collectors.toList());
     }
+    @Override
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, customer.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        customer.setPassword(encodedPassword);
+        customerRepository.save(customer);
+    }
 }
