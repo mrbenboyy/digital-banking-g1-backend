@@ -2,7 +2,10 @@ package com.dev.ebankbackend.web;
 
 import com.dev.ebankbackend.dtos.BankAccountDTO;
 import com.dev.ebankbackend.dtos.CustomerDTO;
+import com.dev.ebankbackend.entities.Customer;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
+import com.dev.ebankbackend.mappers.BankAccountMapperImpl;
+import com.dev.ebankbackend.repositories.CustomerRepository;
 import com.dev.ebankbackend.services.BankAccountService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,8 @@ import java.util.List;
 @CrossOrigin("*")
 public class CustomerRestController {
     private BankAccountService bankAccountService;
+    private final CustomerRepository customerRepository; // Inject the repository
+    private final BankAccountMapperImpl dtoMapper;
     @GetMapping("/customers")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<CustomerDTO> customers(){
@@ -62,5 +67,11 @@ public class CustomerRestController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<BankAccountDTO> getCustomerAccounts(@PathVariable Long customerId) {
         return bankAccountService.getCustomerAccounts(customerId);
+    }
+    @GetMapping("/customers/email/{email}")
+    public CustomerDTO getCustomerByEmail(@PathVariable String email) throws CustomerNotFoundException {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        return dtoMapper.fromCustomer(customer);
     }
 }
