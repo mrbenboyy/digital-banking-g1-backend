@@ -30,11 +30,11 @@ public class BankAccountRestAPI {
     public List<BankAccountDTO> listAccounts(){
         return bankAccountService.bankAccountList();
     }
-//    @GetMapping("/accounts/{accountId}/operations")
-//    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
-//    public List<AccountOperationDTO> getHistory(@PathVariable String accountId){
-//        return bankAccountService.accountHistory(accountId);
-//    }
+    @GetMapping("/accounts/{accountId}/operations")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
+    public List<AccountOperationDTO> getHistory(@PathVariable String accountId){
+        return bankAccountService.accountHistory(accountId);
+    }
 
     @GetMapping("/accounts/{accountId}/pageOperations")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
@@ -74,10 +74,5 @@ public class BankAccountRestAPI {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public SavingBankAccountDTO createSavingAccount(@RequestBody SavingBankAccountDTO request) throws CustomerNotFoundException {
         return bankAccountService.saveSavingBankAccount(request.getBalance(), request.getInterestRate(), request.getCustomerDTO().getId());
-    }
-    @GetMapping("/accounts/{accountId}/operations")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public List<AccountOperationDTO> getAccountOperations(@PathVariable String accountId) {
-        return bankAccountService.accountHistory(accountId);
     }
 }
