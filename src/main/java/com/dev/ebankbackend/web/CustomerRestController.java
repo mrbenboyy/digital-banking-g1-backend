@@ -1,5 +1,6 @@
 package com.dev.ebankbackend.web;
 
+import com.dev.ebankbackend.dtos.BankAccountDTO;
 import com.dev.ebankbackend.dtos.CustomerDTO;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 import com.dev.ebankbackend.services.BankAccountService;
@@ -56,5 +57,10 @@ public class CustomerRestController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public void deleteCustomer(@PathVariable Long id){
         bankAccountService.deleteCustomer(id);
+    }
+    @GetMapping("/customers/{customerId}/accounts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public List<BankAccountDTO> getCustomerAccounts(@PathVariable Long customerId) {
+        return bankAccountService.getCustomerAccounts(customerId);
     }
 }

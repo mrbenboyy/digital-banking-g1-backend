@@ -33,4 +33,6 @@ public interface BankAccountService {
     List<CustomerDTO> searchCustomers(String keyword);
 
     void changePassword(String email, String oldPassword, String newPassword);
+
+    List<BankAccountDTO> getCustomerAccounts(Long customerId);
 }

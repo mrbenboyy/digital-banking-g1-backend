@@ -229,4 +229,18 @@ public class BankAccountServiceImpl implements BankAccountService {
         customer.setPassword(encodedPassword);
         customerRepository.save(customer);
     }
+
+    @Override
+    public List<BankAccountDTO> getCustomerAccounts(Long customerId) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByCustomerId(customerId);
+        return bankAccounts.stream()
+                .map(bankAccount -> {
+                    if (bankAccount instanceof SavingAccount) {
+                        return dtoMapper.fromSavingBankAccount((SavingAccount) bankAccount);
+                    } else {
+                        return dtoMapper.fromCurrentBankAccount((CurrentAccount) bankAccount);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
 }
